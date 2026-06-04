@@ -110,26 +110,32 @@ def get_tissue_recovery_VLP():
     return 0
 
 
+
 def append_recovery_stats_to_df():
     # 1 square - 1 celltype (s1c1)
     # neighboring squares - 1 celtype (nsc1)
     # 1 square - all cells (s1ac)
     # 
-#   s1c1_unch = np.zeros((13500))
-#   s1c1_red = np.zeros((13500))
-#   s1c1_inc = np.zeros((13500))
+    s1c1_unch = np.zeros((13500))
+    s1c1_red = np.zeros((13500))
+    s1c1_inc = np.zeros((13500))
 
-#   nsc1_unch = np.zeros((13500))
-#   nsc1_red = np.zeros((13500))
-#   nsc1_inc = np.zeros((13500))
+    nsc1_unch = np.zeros((13500))
+    nsc1_red = np.zeros((13500))
+    nsc1_red_thresh = np.zeros((13500))
+    nsc1_inc = np.zeros((13500))
+    nsc1_insuf = np.zeros((13500))
 
-#   s1ac_unch = np.zeros((13500))
-#   s1ac_red = np.zeros((13500))
-#   s1ac_inc = np.zeros((13500))
+    s1ac_unch = np.zeros((13500))
+    s1ac_red = np.zeros((13500))
+    s1ac_inc = np.zeros((13500))
+    s1ac_insuf = np.zeros((13500))
 
     n5sc1_unch = np.zeros((13500))
     n5sc1_red = np.zeros((13500))
+    n5sc1_red_thresh = np.zeros((13500))
     n5sc1_inc = np.zeros((13500))
+    n5sc1_insuf = np.zeros((13500))
 
     i=-1
     for paramid in range(135):
@@ -138,53 +144,118 @@ def append_recovery_stats_to_df():
         filedir = '/Users/somya/Documents/SIGMIG_from_Bigram2/Dat_3/Adjdtrs{a}/pstable{s}/intden{d}'.format(a=int(adj_daughters*10), s=int(10*p_stable), d = int(10*density))
         for rep in range(100):
             i+=1
-#           s1c1_filename = os.path.join(filedir,'Analysis/RecoveryDist/RD_rep{r1:03d}_param{p1:05d}.pkl'.format(r1=int(rep), p1=int(paramid)))
-#           nsc1_filename = os.path.join(filedir,'Analysis/RecoveryDistBigPerturb/RD_rep{r1:03d}_param{p1:05d}.pkl'.format(r1=int(rep), p1=int(paramid)))
-#           s1ac_filename = os.path.join(filedir,'Analysis/RecoveryDistEmptySquare/RD_rep{r1:03d}_param{p1:05d}.pkl'.format(r1=int(rep), p1=int(paramid)))
+            s1c1_filename = os.path.join(filedir,'Analysis/RecoveryDist/RD_rep{r1:03d}_param{p1:05d}.pkl'.format(r1=int(rep), p1=int(paramid)))
+            nsc1_filename = os.path.join(filedir,'Analysis/RecoveryDistBigPerturb/RD_rep{r1:03d}_param{p1:05d}.pkl'.format(r1=int(rep), p1=int(paramid)))
+            s1ac_filename = os.path.join(filedir,'Analysis/RecoveryDistEmptySquare/RD_rep{r1:03d}_param{p1:05d}.pkl'.format(r1=int(rep), p1=int(paramid)))
             n5sc1_filename = os.path.join(filedir,'Analysis/RecoveryDistVLPerturb/Adj5/RD_rep{r1:03d}_param{p1:05d}.pkl'.format(r1=int(rep), p1=int(paramid)))
 
-#           s1c1_recoverydist = pickle.load(open(s1c1_filename,'rb'))
-#           nsc1_recoverydist = pickle.load(open(nsc1_filename,'rb'))
-#           s1ac_recoverydist = pickle.load(open(s1ac_filename,'rb'))
+            s1c1_recoverydist = pickle.load(open(s1c1_filename,'rb'))
+            nsc1_recoverydist = pickle.load(open(nsc1_filename,'rb'))
+            s1ac_recoverydist = pickle.load(open(s1ac_filename,'rb'))
             n5sc1_recoverydist = pickle.load(open(n5sc1_filename,'rb'))
             
-#           s1c1_init_fin_dist = s1c1_recoverydist[:,-1] - s1c1_recoverydist[:,0]
-#           nsc1_init_fin_dist = nsc1_recoverydist[:,-1] - nsc1_recoverydist[:,0]
-#           s1ac_init_fin_dist = s1ac_recoverydist[:,-1] - s1ac_recoverydist[:,0]
+            s1c1_init_fin_dist = s1c1_recoverydist[:,-1] - s1c1_recoverydist[:,0]
+            nsc1_init_fin_dist = nsc1_recoverydist[:,-1] - nsc1_recoverydist[:,0]
+            s1ac_init_fin_dist = s1ac_recoverydist[:,-1] - s1ac_recoverydist[:,0]
             n5sc1_init_fin_dist = n5sc1_recoverydist[:,-1] - n5sc1_recoverydist[:,0]
 
-#           s1c1_unch[int(i)] = sum(s1c1_init_fin_dist == 0)/len(s1c1_init_fin_dist)
-#           s1c1_red[int(i)] = sum(s1c1_init_fin_dist < 0)/len(s1c1_init_fin_dist)
-#           s1c1_inc[int(i)] = sum(s1c1_init_fin_dist > 0)/len(s1c1_init_fin_dist)
-#   
-#           nsc1_unch[int(i)] = sum(nsc1_init_fin_dist == 0)/len(nsc1_init_fin_dist)
-#           nsc1_red[int(i)] = sum(nsc1_init_fin_dist < 0)/len(nsc1_init_fin_dist)
-#           nsc1_inc[int(i)] = sum(nsc1_init_fin_dist > 0)/len(nsc1_init_fin_dist)
+            s1c1_init_fin_ratio = s1c1_recoverydist[:,-1] / s1c1_recoverydist[:,0]
+            nsc1_init_fin_ratio = nsc1_recoverydist[:,-1] / nsc1_recoverydist[:,0]
+            s1ac_init_fin_ratio = s1ac_recoverydist[:,-1] / s1ac_recoverydist[:,0]
+            n5sc1_init_fin_ratio = n5sc1_recoverydist[:,-1] / n5sc1_recoverydist[:,0]
+            
 
-#           s1ac_unch[int(i)] = sum(s1ac_init_fin_dist == 0)/len(s1ac_init_fin_dist) 
-#           s1ac_red[int(i)] = sum(s1ac_init_fin_dist < 0)/len(s1ac_init_fin_dist)
-#           s1ac_inc[int(i)] = sum(s1ac_init_fin_dist > 0)/len(s1ac_init_fin_dist)
+            s1c1_unch[int(i)] = sum(s1c1_init_fin_ratio == 1)/len(s1c1_init_fin_dist)
+            s1c1_red[int(i)] = sum(s1c1_init_fin_ratio < 1)/len(s1c1_init_fin_dist)
+            s1c1_inc[int(i)] = sum(s1c1_init_fin_ratio > 1)/len(s1c1_init_fin_dist)
+
+            s1ac_unch[int(i)] = sum(s1ac_init_fin_ratio == 1)/len(s1ac_init_fin_dist) 
+            s1ac_red[int(i)] = sum(s1ac_init_fin_ratio < 1)/len(s1ac_init_fin_dist)
+            s1ac_inc[int(i)] = sum(s1ac_init_fin_ratio > 1)/len(s1ac_init_fin_dist)
+            s1ac_insuf[int(i)] = sum(s1ac_init_fin_ratio == 1)/len(s1ac_init_fin_dist) 
     
-            n5sc1_unch[int(i)] = sum(n5sc1_init_fin_dist == 0)/len(n5sc1_init_fin_dist)
-            n5sc1_red[int(i)] = sum(n5sc1_init_fin_dist < 0)/len(n5sc1_init_fin_dist)
-            n5sc1_inc[int(i)] = sum(n5sc1_init_fin_dist > 0)/len(n5sc1_init_fin_dist)
+            nsc1_unch[int(i)] = sum(nsc1_init_fin_ratio == 1)/len(nsc1_init_fin_dist)
+            nsc1_red[int(i)] = sum(nsc1_init_fin_ratio < 1)/len(nsc1_init_fin_dist)
+            nsc1_red_thresh[int(i)] = sum(nsc1_init_fin_ratio <= 0.8)/len(nsc1_init_fin_dist)
+            nsc1_insuf[int(i)] = sum((nsc1_init_fin_ratio>0.8)&(nsc1_init_fin_ratio<=1))/len(nsc1_init_fin_dist)
+            nsc1_inc[int(i)] = sum(nsc1_init_fin_ratio > 1)/len(nsc1_init_fin_dist)
+    
+            n5sc1_unch[int(i)] = sum(n5sc1_init_fin_ratio == 1)/len(n5sc1_init_fin_dist)
+            n5sc1_red[int(i)] = sum(n5sc1_init_fin_ratio < 1)/len(n5sc1_init_fin_dist)
+            n5sc1_red_thresh[int(i)] = sum(n5sc1_init_fin_ratio <= 0.6)/len(n5sc1_init_fin_dist)
+            n5sc1_insuf[int(i)] = sum((n5sc1_init_fin_ratio>0.6)&(n5sc1_init_fin_ratio<=1))/len(n5sc1_init_fin_dist)
+            n5sc1_inc[int(i)] = sum(n5sc1_init_fin_ratio > 1)/len(n5sc1_init_fin_dist)
         print('processed param',paramid)
 
-#   df['s1c1_unch'] = s1c1_unch
-#   df['s1c1_red'] = s1c1_red
-#   df['s1c1_inc'] = s1c1_inc
+    df['s1c1_unch'] = s1c1_unch
+    df['s1c1_red'] = s1c1_red
+    df['s1c1_inc'] = s1c1_inc
 
-#   df['nsc1_unch'] = nsc1_unch
-#   df['nsc1_red'] = nsc1_red
-#   df['nsc1_inc'] = nsc1_inc
+    df['nsc1_unch'] = nsc1_unch
+    df['nsc1_red'] = nsc1_red
+    df['nsc1_red_thresh'] = nsc1_red_thresh
+    df['nsc1_inc'] = nsc1_inc
+    df['nsc1_insuf'] = nsc1_insuf
 
-#   df['s1ac_unch'] = s1ac_unch
-#   df['s1ac_red'] = s1ac_red
-#   df['s1ac_inc'] = s1ac_inc
+    df['s1ac_unch'] = s1ac_unch
+    df['s1ac_red'] = s1ac_red
+    df['s1ac_inc'] = s1ac_inc
+    df['s1ac_insuf'] = s1ac_insuf
 
     df['n5sc1_unch'] = n5sc1_unch
     df['n5sc1_red'] = n5sc1_red
+    df['n5sc1_red_thresh'] = n5sc1_red_thresh
     df['n5sc1_inc'] = n5sc1_inc
+    df['n5sc1_insuf'] = n5sc1_insuf
+
+    dict1['finalbody_df'] = df
+    pickle.dump(dict1, open('/Users/somya/Documents/SIGMIG_from_Bigram2/Dat_3/finalbody_richness_disperseness.pkl','wb'))
+    return 0
+
+def append_average_recovery_to_df():
+    # 1 square - 1 celltype (s1c1)
+    # neighboring squares - 1 celltype (nsc1)
+    # 1 square - all cells (s1ac)
+    # 5 neighboring squares - 1 celltype (n5sc1)
+
+    s1c1_avred = np.zeros((13500))
+    nsc1_avred = np.zeros((13500))
+    s1ac_avred = np.zeros((13500))
+    n5sc1_avred = np.zeros((13500))
+
+    i=-1
+    for paramid in range(135):
+        params = pickle.load(open('/Users/somya/Documents/SIGMIG_from_Bigram2/model4_param.p','rb'))[paramid]
+        p_stable, p_diff, density, celltypes, loc, T, adj_daughters, no_div_threshold, reps = params
+        filedir = '/Users/somya/Documents/SIGMIG_from_Bigram2/Dat_3/Adjdtrs{a}/pstable{s}/intden{d}'.format(a=int(adj_daughters*10), s=int(10*p_stable), d = int(10*density))
+        for rep in range(100):
+            i+=1
+            s1c1_filename = os.path.join(filedir,'Analysis/RecoveryDist/RD_rep{r1:03d}_param{p1:05d}.pkl'.format(r1=int(rep), p1=int(paramid)))
+            nsc1_filename = os.path.join(filedir,'Analysis/RecoveryDistBigPerturb/RD_rep{r1:03d}_param{p1:05d}.pkl'.format(r1=int(rep), p1=int(paramid)))
+            s1ac_filename = os.path.join(filedir,'Analysis/RecoveryDistEmptySquare/RD_rep{r1:03d}_param{p1:05d}.pkl'.format(r1=int(rep), p1=int(paramid)))
+            n5sc1_filename = os.path.join(filedir,'Analysis/RecoveryDistVLPerturb/Adj5/RD_rep{r1:03d}_param{p1:05d}.pkl'.format(r1=int(rep), p1=int(paramid)))
+
+            s1c1_recoverydist = pickle.load(open(s1c1_filename,'rb'))
+            nsc1_recoverydist = pickle.load(open(nsc1_filename,'rb'))
+            s1ac_recoverydist = pickle.load(open(s1ac_filename,'rb'))
+            n5sc1_recoverydist = pickle.load(open(n5sc1_filename,'rb'))
+            
+            # ratios of injury magnitudes after healing vs right after injury
+            s1c1_init_fin_ratio = s1c1_recoverydist[:,-1] / s1c1_recoverydist[:,0]
+            nsc1_init_fin_ratio = nsc1_recoverydist[:,-1] / nsc1_recoverydist[:,0]
+            s1ac_init_fin_ratio = s1ac_recoverydist[:,-1] / s1ac_recoverydist[:,0]
+            n5sc1_init_fin_ratio = n5sc1_recoverydist[:,-1] / n5sc1_recoverydist[:,0]
+
+            s1c1_avred[int(i)] = np.median(1 - s1c1_init_fin_ratio)
+            nsc1_avred[int(i)] = np.median(1 - nsc1_init_fin_ratio) 
+            s1ac_avred[int(i)] = np.median(1 - s1ac_init_fin_ratio)
+            n5sc1_avred[int(i)] = np.median(1 - n5sc1_init_fin_ratio)
+        print('processed param',paramid)
+
+    df['s1c1_avred'] = s1c1_avred
+    df['nsc1_avred'] = nsc1_avred
+    df['s1ac_avred'] = s1ac_avred
+    df['n5sc1_avred'] = n5sc1_avred
 
     dict1['finalbody_df'] = df
     pickle.dump(dict1, open('/Users/somya/Documents/SIGMIG_from_Bigram2/Dat_3/finalbody_richness_disperseness.pkl','wb'))
@@ -196,5 +267,6 @@ if __name__=='__main__':
   # perturbsizes = [2,3,4,5]
   # with Pool(5) as pool:
   #     pool.map(get_tissue_recovery_VLP, perturbsizes)
-    get_tissue_recovery_VLP()
+  # get_tissue_recovery_VLP()
     append_recovery_stats_to_df()
+  # append_average_recovery_to_df()
