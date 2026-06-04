@@ -15,7 +15,7 @@ Files in this repository:
 1. make_fig0_v2.py
 2. make_fig1_v2.py
 3. make_fig2.py
-4. make_fig3_3.py
+4. make_fig3_4.py
    
    DATA FILES
 1. finalbody_richness_disperseness.pkl: pickle file containing a Python dictionary describing model generated tissues
